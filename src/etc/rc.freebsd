@@ -121,5 +121,13 @@ for rc_filename in ${rc_filenames}; do
 		continue
 	fi
 
+	# Special case: don't stop ipfw.  Doing so will cause problems with pf/ipfw ordering when
+	# it is started again, if we're doing this from 'configctl service reload all'.  If this
+	# is happening at system shutdown, not stopping ipfw won't really matter.
+	if [ $rc_filename = /etc/rc.d/ipfw -a ${1} = stop ]; then
+		echo "Notice: not stopping ipfw to prevent pf/ipfw ordering issues on restart"
+		continue
+	fi
+
 	${rc_filename} ${1}
 done
