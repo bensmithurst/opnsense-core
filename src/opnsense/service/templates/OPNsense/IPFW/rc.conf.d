@@ -20,4 +20,5 @@
 dummynet_enable="YES"
 firewall_enable="{% if shapers or cp_zones %}YES{% else %}NO{% endif %}"
 firewall_script="/usr/local/etc/rc.ipfw"
+firewall_coscripts="/usr/local/etc/rc.ipfw.fix_order"
 ipfw_defer="YES"
