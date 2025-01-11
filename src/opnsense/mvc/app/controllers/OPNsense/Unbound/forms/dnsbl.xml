@@ -13,6 +13,14 @@
         <help>Force the usage of SafeSearch on Google, DuckDuckGo, Bing, Qwant, PixaBay and YouTube</help>
     </field>
     <field>
+        <id>unbound.dnsbl.blockicloudprivaterelay</id>
+        <label>Block iCloud Private Relay</label>
+        <type>checkbox</type>
+        <style>blockicloudprivaterelay</style>
+        <help>Requests Apple devices not to use iCloud Private Relay.  Enable this to ensure DNS blocking
+          applies correctly to Apple devices using this instance of Unbound as their resolver.</help>
+    </field>
+    <field>
         <id>unbound.dnsbl.type</id>
         <label>Type of DNSBL</label>
         <type>select_multiple</type>

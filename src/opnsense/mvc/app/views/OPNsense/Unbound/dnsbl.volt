@@ -28,20 +28,32 @@
 <script>
    $(document).ready(function() {
        var data_get_map = {'frm_dnsbl_settings':"/api/unbound/settings/get"};
+
+        var getStateFromForm = function() {
+            var state = '';
+            ['safesearch', 'blockicloudprivaterelay'].forEach(function (element) {
+                if ($('.' + element).is(':checked')) {
+                    state += element;
+                }
+            });
+            return state;
+        }
+
        let init_state = null;
        mapDataToFormUI(data_get_map).done(function(data){
            formatTokenizersUI();
            $('.selectpicker').selectpicker('refresh');
-           init_state = $('.safesearch').is(':checked');
+           init_state = getStateFromForm()
        });
 
        $("#saveAct").SimpleActionButton({
           onPreAction: function() {
               const dfObj = new $.Deferred();
-              let safesearch_changed = !($('.safesearch').is(':checked') == init_state);
-              init_state = $('.safesearch').is(':checked');
+              let new_state = getStateFromForm();
+              let changed = (new_state != init_state);
+              init_state = new_state;
               saveFormToEndpoint("/api/unbound/settings/set", 'frm_dnsbl_settings', function(){
-                  if (safesearch_changed) {
+                  if (changed) {
                       /* Restart Unbound and apply the DNSBL after it has finished */
                       ajaxCall('/api/unbound/service/reconfigure', {}, function(data,status) {
                           dfObj.resolve();

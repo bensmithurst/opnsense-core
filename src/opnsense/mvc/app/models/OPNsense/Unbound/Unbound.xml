@@ -178,6 +178,7 @@
                 <Required>Y</Required>
             </enabled>
             <safesearch type="BooleanField"/>
+            <blockicloudprivaterelay type="BooleanField"/>
             <type type="OptionField">
                 <Multiple>Y</Multiple>
                 <OptionValues>
