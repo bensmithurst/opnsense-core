@@ -2916,6 +2916,12 @@ if [ -n "\${2}" ]; then
     # this script so do not clear the file as it may already exist.
     /usr/local/sbin/ifctl -i \${1} -6rd -a \${2}
 fi
+(
+# Obtain a lock for the dhcp6c startup procedure.  If we can't get
+# the lock then just exit - no need to report failure, as the startup
+# is already in progress.
+/usr/local/bin/flock 99 || exit
+
 if [ -f /var/run/dhcp6c.pid ]; then
     if ! /bin/pkill -0 -F /var/run/dhcp6c.pid; then
         rm -f /var/run/dhcp6c.pid
@@ -2926,8 +2932,21 @@ if [ -f /var/run/dhcp6c.pid ]; then
     /bin/pkill -HUP -F /var/run/dhcp6c.pid
 else
     /usr/bin/logger -t dhcp6c "RTSOLD script - Starting dhcp6c daemon"
-    {$dhcp6ccommand}
+
+    # Prevent dhcp6c itself from holding the lock - close the lock FD.
+    # On failure, just exit - no point holding the lock while we
+    # wait for the pidfile after dhcp6c failed.  Failure here could mean
+    # dhcp6c failed to parse its config file for example.
+    {$dhcp6ccommand} 99>&- || exit
+
+    # Wait up to 5 seconds for dhcp6c to create its pidfile.
+    n=0
+    until [ -f /var/run/dhcp6c.pid -o \$n -ge 5 ]; do
+        n=$((n+1))
+        sleep 1
+    done
 fi
+) 99>/var/run/rtsold_script.lock
 
 EOD;
 
