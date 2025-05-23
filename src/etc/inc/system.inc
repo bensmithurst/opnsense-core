@@ -679,7 +679,7 @@ function system_routing_configure($verbose = false, $interface_map = null, $moni
     }
 
     if (isset($config['system']['gw_switch_default']) && $monitor !== 'ignore') {
-        foreach (return_gateways_status() as $gwname => $gwstatus) {
+        foreach (return_gateways_status_wait() as $gwname => $gwstatus) {
             /* for clarity: this also matches 'force_down' */
             if (strpos($gwstatus['status'], 'down') !== false) {
                 $down_gateways[] = $gwname;
@@ -1357,4 +1357,33 @@ function reset_factory_defaults($sync = true)
     } else {
         mwexec_bg($shutdown_cmd);
     }
+}
+
+function return_gateways_status_wait($wait = 15) {
+	$delay = 0.1;
+	$total_delay = 0;
+	while ($total_delay < $wait) {
+		$result = return_gateways_status();
+		$nodata = false;
+		foreach ($result as $gw) {
+			if (!empty($gw['nodata'])) {
+				#print "no data on {$gw['name']}\n";
+				$nodata = true;
+				break;
+			}
+		}
+		if (!$nodata) {
+			return $result;
+		}
+
+		$cur_delay = $delay;
+		if ($total_delay + $cur_delay > $wait) {
+			$cur_delay = $wait - $total_delay;
+		}
+		#print "sleep $cur_delay ($total_delay)\n";
+		usleep($cur_delay * 1000000);
+		$total_delay += $cur_delay;
+		$delay += 0.1;
+	}
+	return $result;
 }

@@ -327,6 +327,7 @@ function dpinger_status()
 
         $fp = @stream_socket_client("unix://{$procs[$gwname]['socket']}", $errno, $errstr, 1);
         if (!$fp) {
+            $status[$gwname]['nodata'] = true;
             continue;
         }
 
@@ -339,6 +340,7 @@ function dpinger_status()
 
         list(, $latency_avg, $latency_stddev, $loss) = explode(' ', preg_replace('/\n/', '', $dinfo));
         if ($latency_stddev == '0' && $loss == '0') {
+            $status[$gwname]['nodata'] = true;
             continue;
         }
 
