@@ -1367,7 +1367,6 @@ function return_gateways_status_wait($wait = 15) {
 		$nodata = false;
 		foreach ($result as $gw) {
 			if (!empty($gw['nodata'])) {
-				#print "no data on {$gw['name']}\n";
 				$nodata = true;
 				break;
 			}
@@ -1376,14 +1375,8 @@ function return_gateways_status_wait($wait = 15) {
 			return $result;
 		}
 
-		$cur_delay = $delay;
-		if ($total_delay + $cur_delay > $wait) {
-			$cur_delay = $wait - $total_delay;
-		}
-		#print "sleep $cur_delay ($total_delay)\n";
-		usleep($cur_delay * 1000000);
-		$total_delay += $cur_delay;
-		$delay += 0.1;
+		usleep($delay * 1000000);
+		$total_delay += $delay;
 	}
 	return $result;
 }
