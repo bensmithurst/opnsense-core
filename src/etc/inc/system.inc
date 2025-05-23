@@ -1359,24 +1359,25 @@ function reset_factory_defaults($sync = true)
     }
 }
 
-function return_gateways_status_wait($wait = 15) {
-	$delay = 0.1;
-	$total_delay = 0;
-	while ($total_delay < $wait) {
-		$result = return_gateways_status();
-		$nodata = false;
-		foreach ($result as $gw) {
-			if (!empty($gw['nodata'])) {
-				$nodata = true;
-				break;
-			}
-		}
-		if (!$nodata) {
-			return $result;
-		}
+function return_gateways_status_wait($wait = 15)
+{
+    $delay = 0.1;
+    $total_delay = 0;
+    while ($total_delay < $wait) {
+        $result = return_gateways_status();
+        $nodata = false;
+        foreach ($result as $gw) {
+            if (!empty($gw['nodata'])) {
+                $nodata = true;
+                break;
+            }
+        }
+        if (!$nodata) {
+            return $result;
+        }
 
-		usleep($delay * 1000000);
-		$total_delay += $delay;
-	}
-	return $result;
+        usleep($delay * 1000000);
+        $total_delay += $delay;
+    }
+    return $result;
 }
