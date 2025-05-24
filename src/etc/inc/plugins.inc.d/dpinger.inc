@@ -338,9 +338,6 @@ function dpinger_status()
         fclose($fp);
 
         list(, $latency_avg, $latency_stddev, $loss) = explode(' ', preg_replace('/\n/', '', $dinfo));
-        if ($latency_stddev == '0' && $loss == '0') {
-            continue;
-        }
 
         $latency_stddev = round($latency_stddev / 1000, 1);
         $latency_avg = round($latency_avg / 1000, 1);
